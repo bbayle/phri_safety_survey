@@ -1,5 +1,5 @@
 """
-Part I — Injury Criteria & ISO/TS 15066 Contact Force Monitoring
+Part I — Injury Criteria & ISO/TS 15066 Contact Force Monitoring (with Claude)
 ════════════════════════════════════════════════════════════════════
 
 Survey section: Part I §1.1–1.2
