@@ -1,0 +1,56 @@
+<!-- Part 2: planar_arm.xml
+     A 3-DOF planar arm (torque-controlled) operating in the XZ plane.
+     The end-effector site 'ee_site' is used for Jacobian computation.
+     External forces are applied via the 'cfrc_ext' array (MuJoCo's
+     Cartesian external force/torque on each body, in world frame).
+-->
+<mujoco model="planar_arm">
+  <option gravity="0 0 -9.81" timestep="0.002" integrator="RK4"/>
+
+  <asset>
+    <material name="link_mat" rgba="0.25 0.55 0.85 1"/>
+    <material name="ee_mat"   rgba="0.9  0.4  0.1  1"/>
+  </asset>
+
+  <worldbody>
+    <geom name="floor" type="plane" size="2 2 0.1" rgba="0.7 0.7 0.7 1"/>
+
+    <body name="base" pos="0 0 0.1">
+      <geom name="base" type="cylinder" size="0.06 0.06" material="link_mat" mass="3"/>
+
+      <body name="link1" pos="0 0 0.06">
+        <joint name="j1" type="hinge" axis="0 1 0"
+               range="-1.57 1.57" damping="3.0" armature="0.05"/>
+        <geom type="capsule" fromto="0 0 0  0.3 0 0"
+              size="0.025" material="link_mat" mass="1.2"/>
+
+        <body name="link2" pos="0.3 0 0">
+          <joint name="j2" type="hinge" axis="0 1 0"
+                 range="-2.5 0.5" damping="2.0" armature="0.04"/>
+          <geom type="capsule" fromto="0 0 0  0.28 0 0"
+                size="0.022" material="link_mat" mass="0.9"/>
+
+          <body name="link3" pos="0.28 0 0">
+            <joint name="j3" type="hinge" axis="0 1 0"
+                   range="-2.0 2.0" damping="1.5" armature="0.03"/>
+            <geom type="capsule" fromto="0 0 0  0.22 0 0"
+                  size="0.018" material="link_mat" mass="0.6"/>
+
+            <body name="end_effector" pos="0.22 0 0">
+              <geom name="ee_geom" type="sphere" size="0.025" material="ee_mat" mass="0.15"
+                    solimp="0.99 0.999 0.001" solref="0.02 1"/>
+              <site name="ee_site" size="0.01" rgba="1 0 0 1"/>
+            </body>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+
+  <actuator>
+    <!-- Torque-controlled joints (no internal gearing model) -->
+    <motor name="act_j1" joint="j1" gear="1" ctrllimited="true" ctrlrange="-50 50"/>
+    <motor name="act_j2" joint="j2" gear="1" ctrllimited="true" ctrlrange="-40 40"/>
+    <motor name="act_j3" joint="j3" gear="1" ctrllimited="true" ctrlrange="-25 25"/>
+  </actuator>
+</mujoco>

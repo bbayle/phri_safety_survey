@@ -1,0 +1,95 @@
+<!-- Part 5: cobot_arm.xml
+     A 7-DOF collaborative robot arm.
+     This model is used to demonstrate a supervisory safety layer
+     (ISO 10218-1 SRP/CS Category 3) running independently of the
+     main controller. Joint limits and geom contacts are explicitly
+     set to allow the safety monitor to trigger realistically.
+-->
+<mujoco model="cobot_arm">
+  <option gravity="0 0 -9.81" timestep="0.002" integrator="RK4"/>
+
+  <asset>
+    <material name="cobot_mat"  rgba="0.15 0.15 0.15 1"/>
+    <material name="joint_mat"  rgba="0.85 0.85 0.85 1"/>
+    <material name="ee_mat"     rgba="0.9  0.4  0.1  1"/>
+    <material name="obstacle"   rgba="0.8  0.2  0.2  0.7"/>
+  </asset>
+
+  <worldbody>
+    <geom name="floor" type="plane" size="2 2 0.1" rgba="0.75 0.75 0.75 1"/>
+
+    <!-- Fixed obstacle (represents human limb at rest) -->
+    <body name="obstacle_body" pos="0.5 0.1 0.6">
+      <geom name="obstacle_geom" type="box" size="0.06 0.06 0.15"
+            material="obstacle"
+            solimp="0.99 0.999 0.001" solref="0.01 1"
+            condim="3" mass="0"/>
+    </body>
+
+    <!-- Cobot base -->
+    <body name="cobot_base" pos="0 0 0.1">
+      <geom type="cylinder" size="0.08 0.08" material="cobot_mat" mass="5"/>
+
+      <body name="cobot_l1" pos="0 0 0.08">
+        <joint name="cj1" type="hinge" axis="0 0 1"
+               range="-3.14 3.14" damping="5" armature="0.12"/>
+        <geom type="capsule" fromto="0 0 0  0 0 0.32"
+              size="0.04" material="cobot_mat" mass="2.5"/>
+
+        <body name="cobot_l2" pos="0 0 0.32">
+          <joint name="cj2" type="hinge" axis="0 1 0"
+                 range="-1.57 1.57" damping="4" armature="0.1"/>
+          <geom type="capsule" fromto="0 0 0  0.3 0 0"
+                size="0.035" material="cobot_mat" mass="2.0"/>
+
+          <body name="cobot_l3" pos="0.3 0 0">
+            <joint name="cj3" type="hinge" axis="0 0 1"
+                   range="-3.14 3.14" damping="3" armature="0.08"/>
+            <geom type="capsule" fromto="0 0 0  0 0 -0.28"
+                  size="0.03" material="cobot_mat" mass="1.6"/>
+
+            <body name="cobot_l4" pos="0 0 -0.28">
+              <joint name="cj4" type="hinge" axis="0 1 0"
+                     range="-2.0 2.0" damping="2.5" armature="0.06"/>
+              <geom type="capsule" fromto="0 0 0  0.26 0 0"
+                    size="0.026" material="cobot_mat" mass="1.2"/>
+
+              <body name="cobot_l5" pos="0.26 0 0">
+                <joint name="cj5" type="hinge" axis="0 0 1"
+                       range="-3.14 3.14" damping="2" armature="0.04"/>
+                <geom type="capsule" fromto="0 0 0  0 0 -0.22"
+                      size="0.022" material="cobot_mat" mass="0.9"/>
+
+                <body name="cobot_l6" pos="0 0 -0.22">
+                  <joint name="cj6" type="hinge" axis="0 1 0"
+                         range="-2.0 2.0" damping="1.5" armature="0.03"/>
+                  <geom type="capsule" fromto="0 0 0  0.18 0 0"
+                        size="0.018" material="cobot_mat" mass="0.6"/>
+
+                  <body name="cobot_l7" pos="0.18 0 0">
+                    <joint name="cj7" type="hinge" axis="0 0 1"
+                           range="-3.14 3.14" damping="1" armature="0.02"/>
+                    <geom name="ee_geom" type="sphere" size="0.04"
+                          material="ee_mat" mass="0.4"
+                          solimp="0.99 0.999 0.001" solref="0.02 1"/>
+                    <site name="ee_site" size="0.015" rgba="1 0 0 1"/>
+                  </body>
+                </body>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+
+  <actuator>
+    <motor name="a1" joint="cj1" gear="1" ctrllimited="true" ctrlrange="-87 87"/>
+    <motor name="a2" joint="cj2" gear="1" ctrllimited="true" ctrlrange="-87 87"/>
+    <motor name="a3" joint="cj3" gear="1" ctrllimited="true" ctrlrange="-87 87"/>
+    <motor name="a4" joint="cj4" gear="1" ctrllimited="true" ctrlrange="-87 87"/>
+    <motor name="a5" joint="cj5" gear="1" ctrllimited="true" ctrlrange="-12 12"/>
+    <motor name="a6" joint="cj6" gear="1" ctrllimited="true" ctrlrange="-12 12"/>
+    <motor name="a7" joint="cj7" gear="1" ctrllimited="true" ctrlrange="-12 12"/>
+  </actuator>
+</mujoco>

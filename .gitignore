@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+dist/
+build/
+*.egg
+
+# Conda / venv
+.env/
+env/
+venv/
+
+# MuJoCo cache
+*.mjb
+.mujoco/
+
+# Outputs (keep .png in git or not — your call)
+*.png
+
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Editor
+.vscode/
+.idea/
+*.swp

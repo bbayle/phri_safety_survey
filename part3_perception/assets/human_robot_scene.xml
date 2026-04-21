@@ -1,0 +1,71 @@
+<!-- Part 3: human_robot_scene.xml
+     A robot arm and a simplified human upper body sharing a workspace.
+     The human 'wrist' body follows a scripted sinusoidal trajectory
+     via mocap (kinematic body). The robot tracks a fixed target while
+     monitoring predicted human proximity.
+-->
+<mujoco model="human_robot_scene">
+  <option gravity="0 0 -9.81" timestep="0.01" integrator="RK4"/>
+
+  <asset>
+    <material name="robot_mat"  rgba="0.2 0.5 0.8 1"/>
+    <material name="human_mat"  rgba="0.9 0.7 0.5 1"/>
+    <material name="ghost_mat"  rgba="1.0 0.3 0.3 0.35"/>
+  </asset>
+
+  <worldbody>
+    <geom name="floor" type="plane" size="3 3 0.1" rgba="0.75 0.75 0.75 1"/>
+
+    <!-- ── Robot ── -->
+    <body name="robot_base" pos="0 0 0.1">
+      <geom type="cylinder" size="0.07 0.07" material="robot_mat" mass="4"/>
+
+      <body name="robot_link1" pos="0 0 0.07">
+        <joint name="rj1" type="hinge" axis="0 0 1" range="-3.14 3.14" damping="3"/>
+        <geom type="capsule" fromto="0 0 0  0 0 0.35" size="0.03" material="robot_mat" mass="1.5"/>
+
+        <body name="robot_link2" pos="0 0 0.35">
+          <joint name="rj2" type="hinge" axis="0 1 0" range="-1.57 1.57" damping="2"/>
+          <geom type="capsule" fromto="0 0 0  0.35 0 0" size="0.025" material="robot_mat" mass="1.2"/>
+
+          <body name="robot_ee_body" pos="0.35 0 0">
+            <geom type="sphere" size="0.03" material="robot_mat" mass="0.3"
+                  solimp="0.99 0.999 0.001" solref="0.02 1"/>
+            <site name="robot_ee" size="0.015" rgba="0 1 0 1"/>
+          </body>
+        </body>
+      </body>
+    </body>
+
+    <!-- ── Human (kinematic / mocap body) ── -->
+    <!-- Shoulder: fixed anchor -->
+    <body name="human_shoulder" pos="0.9 0 0.9" mocap="true">
+      <geom type="sphere" size="0.06" material="human_mat" contype="0" conaffinity="0"/>
+    </body>
+
+    <!-- Upper arm (kinematic, driven by mocap qpos) -->
+    <body name="human_upper_arm" pos="0.9 0 0.9">
+      <joint name="human_shoulder_j" type="ball" damping="0"/>
+      <geom type="capsule" fromto="0 0 0  0 0 -0.28" size="0.035" material="human_mat"
+            contype="0" conaffinity="0"/>
+
+      <body name="human_forearm" pos="0 0 -0.28">
+        <joint name="human_elbow_j" type="hinge" axis="0 1 0" damping="0"/>
+        <geom type="capsule" fromto="0 0 0  0 0 -0.26" size="0.028" material="human_mat"
+              contype="0" conaffinity="0"/>
+
+        <!-- Wrist — the body whose trajectory we predict -->
+        <body name="human_wrist" pos="0 0 -0.26">
+          <geom type="sphere" size="0.04" material="human_mat"
+                contype="0" conaffinity="0"/>
+          <site name="human_wrist_site" size="0.01" rgba="1 1 0 1"/>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+
+  <actuator>
+    <motor name="act_rj1" joint="rj1" gear="1" ctrllimited="true" ctrlrange="-60 60"/>
+    <motor name="act_rj2" joint="rj2" gear="1" ctrllimited="true" ctrlrange="-50 50"/>
+  </actuator>
+</mujoco>

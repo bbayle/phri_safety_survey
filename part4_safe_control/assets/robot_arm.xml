@@ -1,0 +1,69 @@
+<!-- Part 4: robot_arm.xml
+     A 7-DOF arm used as a base model for domain randomisation.
+     Mass, damping, and friction are randomised at the start of each rollout.
+     The model is intentionally minimal — the focus is on the evaluation
+     harness, not the mechanical fidelity.
+-->
+<mujoco model="robot_arm_7dof">
+  <option gravity="0 0 -9.81" timestep="0.002" integrator="RK4"/>
+
+  <asset>
+    <material name="link_mat" rgba="0.3 0.6 0.9 1"/>
+    <material name="ee_mat"   rgba="0.9 0.4 0.1 1"/>
+  </asset>
+
+  <worldbody>
+    <geom name="floor" type="plane" size="2 2 0.1" rgba="0.7 0.7 0.7 1"/>
+
+    <body name="base" pos="0 0 0.1">
+      <geom type="cylinder" size="0.07 0.07" material="link_mat" mass="3"/>
+
+      <body name="link1" pos="0 0 0.07">
+        <joint name="j1" type="hinge" axis="0 0 1" range="-3.14 3.14" damping="5" armature="0.1"/>
+        <geom type="capsule" fromto="0 0 0  0 0 0.3" size="0.03" material="link_mat" mass="2"/>
+
+        <body name="link2" pos="0 0 0.3">
+          <joint name="j2" type="hinge" axis="0 1 0" range="-1.57 1.57" damping="4" armature="0.08"/>
+          <geom type="capsule" fromto="0 0 0  0.28 0 0" size="0.028" material="link_mat" mass="1.8"/>
+
+          <body name="link3" pos="0.28 0 0">
+            <joint name="j3" type="hinge" axis="0 0 1" range="-3.14 3.14" damping="3" armature="0.06"/>
+            <geom type="capsule" fromto="0 0 0  0 0 -0.26" size="0.025" material="link_mat" mass="1.5"/>
+
+            <body name="link4" pos="0 0 -0.26">
+              <joint name="j4" type="hinge" axis="0 1 0" range="-2.0 2.0" damping="2.5" armature="0.05"/>
+              <geom type="capsule" fromto="0 0 0  0.24 0 0" size="0.022" material="link_mat" mass="1.2"/>
+
+              <body name="link5" pos="0.24 0 0">
+                <joint name="j5" type="hinge" axis="0 0 1" range="-3.14 3.14" damping="2" armature="0.04"/>
+                <geom type="capsule" fromto="0 0 0  0 0 -0.22" size="0.018" material="link_mat" mass="0.9"/>
+
+                <body name="link6" pos="0 0 -0.22">
+                  <joint name="j6" type="hinge" axis="0 1 0" range="-2.0 2.0" damping="1.5" armature="0.03"/>
+                  <geom type="capsule" fromto="0 0 0  0.18 0 0" size="0.015" material="link_mat" mass="0.6"/>
+
+                  <body name="link7" pos="0.18 0 0">
+                    <joint name="j7" type="hinge" axis="0 0 1" range="-3.14 3.14" damping="1" armature="0.02"/>
+                    <geom type="sphere" size="0.04" material="ee_mat" mass="0.4"
+                          solimp="0.99 0.999 0.001" solref="0.02 1"/>
+                    <site name="ee_site" size="0.015" rgba="1 0 0 1"/>
+                  </body>
+                </body>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+
+  <actuator>
+    <motor name="act_j1" joint="j1" gear="1" ctrllimited="true" ctrlrange="-87 87"/>
+    <motor name="act_j2" joint="j2" gear="1" ctrllimited="true" ctrlrange="-87 87"/>
+    <motor name="act_j3" joint="j3" gear="1" ctrllimited="true" ctrlrange="-87 87"/>
+    <motor name="act_j4" joint="j4" gear="1" ctrllimited="true" ctrlrange="-87 87"/>
+    <motor name="act_j5" joint="j5" gear="1" ctrllimited="true" ctrlrange="-12 12"/>
+    <motor name="act_j6" joint="j6" gear="1" ctrllimited="true" ctrlrange="-12 12"/>
+    <motor name="act_j7" joint="j7" gear="1" ctrllimited="true" ctrlrange="-12 12"/>
+  </actuator>
+</mujoco>
